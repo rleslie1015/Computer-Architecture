@@ -1,4 +1,7 @@
 import sys
+
+print(sys.argv)
+sys.exit()
 # Memory in the computer:
 # ------
 # A big array of bytes
@@ -12,16 +15,7 @@ import sys
 
 # "opcode" == the instruction itself
 # "operands" == args in the instruction
-memory = [
-    1,  # PRINT_LESLIE
-    3,  # SAVE_REG1, 37     r1 = 37
-    1,  
-    37, 
-    4,  # PRINT_REG  R1     print(r[1])
-    1,  # R1
-    1,  # PRINT_LESLIE
-    2   # HALT
-]
+memory = [0] * 265
 
 # variables are called "registers"
 # * There are a fixed number
@@ -31,6 +25,30 @@ memory = [
 
 register = [0] * 8
 
+# Read program data
+if len(sys.argv != 2):
+    print("usage: compy.py program")
+    sys.exit(1)
+try:
+with open(sys.argv[1]) as f:
+    for line in f:
+        line = line.strip()
+
+        if line == '' or line[0] == "#":
+            continue
+        try:
+            str_value = line.split('#')[0]
+            value = int(str_value)
+
+        except ValueError:
+            print(f"Invalid number {str_value} ")
+            sys.exit()
+
+        print(value)
+sys.exit()
+except ValueError:
+    print(f"File not found: {sys.argv[1]}")
+    sys.exit(2)
 # start execution at address 0
 
 # Keep track of the address of currently executing intruction

@@ -2,12 +2,18 @@
 
 import sys
 
+HLT = 0b00000001
+LDI = 0b10000010
+PRN = 0b01000111
 class CPU:
     """Main CPU class."""
 
-    def __init__(self, memory):
+    def __init__(self):
         """Construct a new CPU."""
-        self.memory = []
+        self.ram = [0] * 256
+        self.reg = [0] * 8
+        self.pc = 0
+        self.running = False
 
     def load(self):
         """Load a program into memory."""
@@ -30,7 +36,6 @@ class CPU:
             self.ram[address] = instruction
             address += 1
 
-
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
 
@@ -39,6 +44,14 @@ class CPU:
         #elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
+
+    def ram_read(self, address):
+        return self.ram[address]
+
+    def ram_write(self, value, address):
+        # print('address', address)
+        # print('value', value)
+        self.ram[address] = value
 
     def trace(self):
         """
@@ -62,4 +75,24 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        while not self.running:
+            instruction = self.ram[self.pc]
+
+            if instruction == HLT: 
+                self.pc += 1
+                sys.exit()
+
+            elif instruction == LDI:
+                operand_a = self.ram_read(self.pc + 1)
+                operand_b = self.ram_read(self.pc + 2)
+                # print(instruction)
+                # print('operand_a', operand_a)
+                # print('operand_b', operand_b)
+                self.reg[operand_a] = operand_b
+                # print(self.reg) 
+                self.pc += 3
+            
+            elif instruction == PRN:
+                reg_num = self.ram[self.pc+1]
+                print(self.reg[reg_num])
+                self.pc += 2
