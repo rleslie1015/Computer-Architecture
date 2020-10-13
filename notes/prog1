@@ -1,0 +1,9 @@
+1  # PRINT_LESLIE
+
+3  # SAVE_REG1, 37     r1 = 37
+1  
+37 
+4  # PRINT_REG  R1     print(r[1])
+1  # R1
+1  # PRINT_LESLIE
+2   # HALT
