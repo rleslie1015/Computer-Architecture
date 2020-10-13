@@ -5,6 +5,7 @@ import sys
 HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
+MUL = 0b10100010
 class CPU:
     """Main CPU class."""
 
@@ -110,8 +111,6 @@ class CPU:
                 operand_a = self.ram_read(self.pc + 1)
                 operand_b = self.ram_read(self.pc + 2)
                 # print(instruction)
-                # print('operand_a', operand_a)
-                # print('operand_b', operand_b)
                 self.reg[operand_a] = operand_b
                 # print(self.reg) 
                 self.pc += 3
@@ -120,3 +119,17 @@ class CPU:
                 reg_num = self.ram[self.pc+1]
                 print(self.reg[reg_num])
                 self.pc += 2
+
+            elif instruction == MUL:
+                # print(instruction)
+                num1 = self.reg[0]
+                num2 = self.reg[1]
+                product = num1 * num2
+                operand_c = self.ram_read(self.pc+1)
+
+                self.reg[operand_c] = product
+                
+                # self.reg[operand_c] = product
+
+                # print(self.reg) 
+                self.pc += 3
