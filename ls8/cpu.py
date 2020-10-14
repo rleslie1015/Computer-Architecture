@@ -104,7 +104,7 @@ class CPU:
             instruction = self.ram[self.pc]
 
             if instruction == HLT: 
-                self.pc += 1
+                # self.pc += 1
                 sys.exit()
 
             elif instruction == LDI:
@@ -113,12 +113,12 @@ class CPU:
                 # print(instruction)
                 self.reg[operand_a] = operand_b
                 # print(self.reg) 
-                self.pc += 3
+                # self.pc += 3
             
             elif instruction == PRN:
                 reg_num = self.ram[self.pc+1]
                 print(self.reg[reg_num])
-                self.pc += 2
+                # self.pc += 2
 
             elif instruction == MUL:
                 # print(instruction)
@@ -128,8 +128,8 @@ class CPU:
                 operand_c = self.ram_read(self.pc+1)
 
                 self.reg[operand_c] = product
-                
-                # self.reg[operand_c] = product
+                # self.pc += 3
 
-                # print(self.reg) 
-                self.pc += 3
+            instruction_len = (instruction >> 6) + 1
+            # print('instruction len', instruction_len)
+            self.pc += instruction_len
