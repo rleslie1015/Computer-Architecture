@@ -20,6 +20,62 @@ class CPU:
         self.pc = 0
         self.running = False
         self.reg[SP]  = 0xf4
+        self.branchtable = {}
+        self.branchtable[HLT] = self.handle_hlt
+        self.branchtable[LDI] = self.handle_ldi
+        self.branchtable[PRN] = self.handle_prn
+        self.branchtable[MUL] = self.handle_mul
+        self.branchtable[POP] = self.handle_pop
+        self.branchtable[PUSH] = self.handle_push
+    
+    def handle_hlt(self):
+        sys.exit()
+
+    def handle_ldi(self):
+        # pass
+        operand_a = self.ram_read(self.pc + 1)
+        operand_b = self.ram_read(self.pc + 2)
+        # print(instruction)
+        self.reg[operand_a] = operand_b
+        # print(self.reg) 
+        # self.pc += 3
+
+    def handle_prn(self):
+        reg_num = self.ram[self.pc+1]
+        print(self.reg[reg_num])
+
+    def handle_mul(self):
+        num1 = self.reg[0]
+        num2 = self.reg[1]
+        product = num1 * num2
+        operand_c = self.ram_read(self.pc+1)
+
+        self.reg[operand_c] = product
+    
+    def handle_push(self):
+        # decrement the stack pointer
+        self.reg[SP] -= 1 
+
+        # grab the value out of the given register
+        reg_num = self.ram[self.pc+1]
+
+        value = self.reg[reg_num] # the value we want to push
+
+        # copy the value onto the stack
+        top_of_stack_addr = self.reg[7]
+        self.ram[top_of_stack_addr] = value
+    
+    def handle_pop(self):
+        # get value from top of stack
+        top_of_stack_addr = self.reg[SP]
+        value = self.ram[top_of_stack_addr] # value we want to put in reg
+
+        # store in the register
+        reg_num = self.ram[self.pc + 1]
+        self.reg[reg_num] = value
+        # print(memory[0xf0:0xf4])
+
+        self.reg[SP] += 1
 
     def load(self):
         """Load a program into memory."""
@@ -107,62 +163,9 @@ class CPU:
         while not self.running:
             # self.trace()
             instruction = self.ram[self.pc]
+         
+            self.branchtable[instruction]() 
 
-            if instruction == HLT: 
-                # self.pc += 1
-                sys.exit()
-
-            elif instruction == LDI:
-                operand_a = self.ram_read(self.pc + 1)
-                operand_b = self.ram_read(self.pc + 2)
-                # print(instruction)
-                self.reg[operand_a] = operand_b
-                # print(self.reg) 
-                # self.pc += 3
-            
-            elif instruction == PRN:
-                reg_num = self.ram[self.pc+1]
-                print(self.reg[reg_num])
-                # self.pc += 2
-
-            elif instruction == MUL:
-                # print(instruction)
-                num1 = self.reg[0]
-                num2 = self.reg[1]
-                product = num1 * num2
-                operand_c = self.ram_read(self.pc+1)
-
-                self.reg[operand_c] = product
-                # self.pc += 3
-            
-            elif instruction == PUSH:
-                # decrement the stack pointer
-                self.reg[SP] -= 1 
-
-                # grab the value out of the given register
-                reg_num = self.ram[self.pc+1]
-
-                value = self.reg[reg_num] # the value we want to push
-
-                # copy the value onto the stack
-                top_of_stack_addr = self.reg[7]
-                self.ram[top_of_stack_addr] = value
-                # print('pc', pc)
-                # pc += 2
-
-            elif instruction == POP:
-                # get value from top of stack
-                top_of_stack_addr = self.reg[SP]
-                value = self.ram[top_of_stack_addr] # value we want to put in reg
-
-                # store in the register
-                reg_num = self.ram[self.pc + 1]
-                self.reg[reg_num] = value
-                # print(memory[0xf0:0xf4])
-
-                self.reg[SP] += 1
-                # pc += 2
-            print(self.reg)
             instruction_len = (instruction >> 6) + 1
             # print('instruction len', instruction_len)
             self.pc += instruction_len
