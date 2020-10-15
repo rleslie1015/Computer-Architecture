@@ -32,13 +32,9 @@ class CPU:
         sys.exit()
 
     def handle_ldi(self):
-        # pass
         operand_a = self.ram_read(self.pc + 1)
         operand_b = self.ram_read(self.pc + 2)
-        # print(instruction)
         self.reg[operand_a] = operand_b
-        # print(self.reg) 
-        # self.pc += 3
 
     def handle_prn(self):
         reg_num = self.ram[self.pc+1]
