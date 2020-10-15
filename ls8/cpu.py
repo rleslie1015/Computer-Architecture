@@ -6,6 +6,10 @@ HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
 MUL = 0b10100010
+POP = 0b01000110
+PUSH = 0b01000101
+
+SP = 7
 class CPU:
     """Main CPU class."""
 
@@ -15,6 +19,7 @@ class CPU:
         self.reg = [0] * 8
         self.pc = 0
         self.running = False
+        self.reg[SP]  = 0xf4
 
     def load(self):
         """Load a program into memory."""
@@ -129,7 +134,35 @@ class CPU:
 
                 self.reg[operand_c] = product
                 # self.pc += 3
+            
+            elif instruction == PUSH:
+                # decrement the stack pointer
+                self.reg[SP] -= 1 
 
+                # grab the value out of the given register
+                reg_num = self.ram[self.pc+1]
+
+                value = self.reg[reg_num] # the value we want to push
+
+                # copy the value onto the stack
+                top_of_stack_addr = self.reg[7]
+                self.ram[top_of_stack_addr] = value
+                # print('pc', pc)
+                # pc += 2
+
+            elif instruction == POP:
+                # get value from top of stack
+                top_of_stack_addr = self.reg[SP]
+                value = self.ram[top_of_stack_addr] # value we want to put in reg
+
+                # store in the register
+                reg_num = self.ram[self.pc + 1]
+                self.reg[reg_num] = value
+                # print(memory[0xf0:0xf4])
+
+                self.reg[SP] += 1
+                # pc += 2
+            print(self.reg)
             instruction_len = (instruction >> 6) + 1
             # print('instruction len', instruction_len)
             self.pc += instruction_len
